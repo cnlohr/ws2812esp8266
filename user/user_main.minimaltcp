@@ -1,0 +1,153 @@
+#include "mem.h"
+#include "c_types.h"
+#include "user_interface.h"
+#include "ets_sys.h"
+#include "driver/uart.h"
+#include "osapi.h"
+#include "espconn.h"
+#include "mystuff.h"
+
+#define PORT 25565
+#define SERVER_TIMEOUT 1000
+#define MAX_CONNS 5
+
+#define at_procTaskPrio        0
+#define at_procTaskQueueLen    1
+
+
+static struct espconn *pTcpServer;
+
+struct user_client_conn
+{
+	struct espconn *pespconn;
+	int cansend:1;
+} connections[MAX_CONNS];
+
+os_event_t    at_procTaskQueue[at_procTaskQueueLen];
+
+static void at_procTask(os_event_t *events);
+
+//TO send, do this
+//    espconn_sent( [pespconn], data, len );
+
+void ICACHE_FLASH_ATTR
+at_tcpclient_recv(void *arg, char *pdata, unsigned short len)
+{
+	int i;
+	struct espconn *pespconn = (struct espconn *)arg;
+	struct user_client_conn *conn = (struct user_client_conn*)pespconn->reverse;
+	printf("Got data: %d\r\n", len );
+	for( i = 0; i < len; i++ )
+	{
+		printf("%02x ", pdata[i] );
+	}
+	printf( "\r\n" );
+	return;
+}
+
+static void ICACHE_FLASH_ATTR
+at_tcpserver_recon_cb(void *arg, sint8 errType)
+{
+	struct espconn *pespconn = (struct espconn *)arg;
+	struct user_client_conn *conn = (struct user_client_conn*)pespconn->reverse;
+	printf( "Repeat Callback\r\n" );
+}
+
+static void ICACHE_FLASH_ATTR
+at_tcpserver_discon_cb(void *arg)
+{
+	struct espconn *pespconn = (struct espconn *) arg;
+	struct user_client_conn *conn = (struct user_client_conn*)pespconn->reverse;
+
+	conn->pespconn = 0;
+	printf("Disconnect.\r\n" );
+}
+
+static void ICACHE_FLASH_ATTR
+at_tcpclient_sent_cb(void *arg)
+{
+	struct espconn *pespconn = (struct espconn *) arg;
+	struct user_client_conn *conn = (struct user_client_conn*)pespconn->reverse;
+
+	conn->cansend = 1;
+
+	uart0_sendStr("\r\nSEND OK\r\n");
+}
+
+
+
+LOCAL void ICACHE_FLASH_ATTR
+at_tcpserver_listen(void *arg)
+{
+	struct espconn *pespconn = (struct espconn *)arg;
+	uint8_t i;
+	printf("get tcpClient:\r\n");
+	for( i = 0; i < MAX_CONNS; i++ )
+	{
+		if( connections[i].pespconn == 0 )
+		{
+			break;
+		}
+	}
+	if( i == MAX_CONNS )
+	{
+		return;
+	}
+
+	connections[i].pespconn = pespconn;
+	connections[i].cansend = 1;
+
+	pespconn->reverse = (void*)&connections[i];
+	espconn_regist_recvcb(pespconn, at_tcpclient_recv);
+	espconn_regist_reconcb(pespconn, at_tcpserver_recon_cb);
+	espconn_regist_disconcb(pespconn, at_tcpserver_discon_cb);
+	espconn_regist_sentcb(pespconn, at_tcpclient_sent_cb);
+	uart0_sendStr("Link\r\n");
+}
+
+static void ICACHE_FLASH_ATTR
+at_procTask(os_event_t *events)
+{
+//	uart0_sendStr("ATPRoc");
+	system_os_post(at_procTaskPrio, 0, 0 );
+	if( events->sig == 0 && events->par == 0 )
+	{
+		//Idle Event.
+		if( connections[0].pespconn && connections[0].cansend )
+		{
+		    espconn_sent( connections[0].pespconn, "hello\r\n", 7 );
+		}
+	}
+}
+
+
+void at_recvTask()
+{
+	//Start popping stuff off fifo. (UART)
+}
+
+void user_init(void)
+{
+	uart_init(BIT_RATE_115200, BIT_RATE_115200);
+	int at_wifiMode = wifi_get_opmode();
+
+	uart0_sendStr("\r\nCustom Server\r\n");
+
+	wifi_set_opmode( 2 ); //We broadcast our ESSID, wait for peopel to join.
+
+	pTcpServer = (struct espconn *)os_zalloc(sizeof(struct espconn));
+	pTcpServer->type = ESPCONN_TCP;
+	pTcpServer->state = ESPCONN_NONE;
+	pTcpServer->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
+	pTcpServer->proto.tcp->local_port = PORT;
+	espconn_regist_connectcb(pTcpServer, at_tcpserver_listen);
+	espconn_accept(pTcpServer);
+	espconn_regist_time(pTcpServer, SERVER_TIMEOUT, 0);
+
+	printf("Hello, world\n" );
+
+	system_os_task(at_procTask, at_procTaskPrio, at_procTaskQueue, at_procTaskQueueLen);
+
+	uart0_sendStr("\r\nCustom Server\r\n");
+	system_os_post(at_procTaskPrio, 0, 0 );
+}
