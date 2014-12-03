@@ -24,7 +24,7 @@ static void WSOFF( uint8_t time )
 }
 
 #define SEND_WS_0 { WSON( 1 ); WSOFF( 8 ); }
-#define SEND_WS_1 { WSON( 6 ); WSOFF( 3 ); }
+#define SEND_WS_1 { WSON( 4 ); WSOFF( 3 ); }
 
 void WS2812OutBuffer( uint8_t * buffer, uint16_t length )
 {
