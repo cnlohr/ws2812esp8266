@@ -10,11 +10,13 @@
 #define PORT 7777
 #define SERVER_TIMEOUT 1000
 #define MAX_CONNS 5
+#define MAX_FRAME 2000
 
-#define at_procTaskPrio        0
-#define at_procTaskQueueLen    1
+#define procTaskPrio        0
+#define procTaskQueueLen    1
 
 
+static volatile os_timer_t some_timer;
 static struct espconn *pUdpServer;
 
 
@@ -28,49 +30,54 @@ static struct espconn *pUdpServer;
 
 
 
-os_event_t    at_procTaskQueue[at_procTaskQueueLen];
+//Tasks that happen all the time.
 
-static void at_procTask(os_event_t *events);
-
+os_event_t    procTaskQueue[procTaskQueueLen];
 static void ICACHE_FLASH_ATTR
-at_procTask(os_event_t *events)
+procTask(os_event_t *events)
 {
-	uart0_sendStr(".");
-	system_os_post(at_procTaskPrio, 0, 0 );
+	system_os_post(procTaskPrio, 0, 0 );
 	if( events->sig == 0 && events->par == 0 )
 	{
 		//Idle Event.
-/*		if( connections[0].pespconn && connections[0].cansend )
-		{
-		    espconn_sent( connections[0].pespconn, "hello\r\n", 7 );
-		}
-*/
 	}
 }
 
 
+//Timer event.
 static void ICACHE_FLASH_ATTR
-at_udpserver_recv(void *arg, char *pusrdata, unsigned short len)
+ myTimer(void *arg)
+{
+	uart0_sendStr(".");
+}
+
+
+//Called when new packet comes in.
+static void ICACHE_FLASH_ATTR
+udpserver_recv(void *arg, char *pusrdata, unsigned short len)
 {
 	struct espconn *pespconn = (struct espconn *)arg;
+	uint8_t buffer[MAX_FRAME];
+
+	//Make sure watchdog is disabled.  WS2812's take a while and can mess it up.
 	ets_wdt_disable();
-	ets_intr_lock();
+	os_intr_lock();
 	WS2812OutBuffer( pusrdata, len );
-	ets_intr_unlock();
-	uart0_sendStr("sent\r\n");
-	return;
+	os_intr_unlock();
+	ets_sprintf( buffer, "%d\r\n", len );
+	uart0_sendStr(buffer);
 }
 
-
-void at_recvTask()
+void ICACHE_FLASH_ATTR at_recvTask()
 {
-	//Start popping stuff off fifo. (UART)
+	//Called from UART.
 }
+
 
 void user_init(void)
 {
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
-	int at_wifiMode = wifi_get_opmode();
+	int wifiMode = wifi_get_opmode();
 
 	uart0_sendStr("\r\nCustom Server\r\n");
 
@@ -82,9 +89,8 @@ void user_init(void)
 	pUdpServer->type = ESPCONN_UDP;
 	pUdpServer->proto.udp = (esp_udp *)os_zalloc(sizeof(esp_udp));
 	pUdpServer->proto.udp->local_port = 7777;
-	espconn_regist_recvcb(pUdpServer, at_udpserver_recv);
+	espconn_regist_recvcb(pUdpServer, udpserver_recv);
 
-//	if( espconn_accept(pUdpServer) != ESPCONN_OK )
 	if( espconn_create( pUdpServer ) )
 	{
 		while(1) { uart0_sendStr( "\r\nFAULT\r\n" ); }
@@ -93,16 +99,22 @@ void user_init(void)
 	//XXX TODO figure out how to safely re-allow this.
 	ets_wdt_disable();
 
-	char outbuffer[] = { 0xff, 0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff };
+	char outbuffer[] = { 0xff, 0x00, 0x00 };
 	WS2812OutBuffer( outbuffer, 1 ); //Initialize the output.
 
-	system_os_task(at_procTask, at_procTaskPrio, at_procTaskQueue, at_procTaskQueueLen);
+	//Add a process
+	system_os_task(procTask, procTaskPrio, procTaskQueue, procTaskQueueLen);
 
 	uart0_sendStr("\r\nCustom Server\r\n");
-
 	WS2812OutBuffer( outbuffer, sizeof(outbuffer) );
 
-	system_os_post(at_procTaskPrio, 0, 0 );
+
+	//Timer example
+	os_timer_disarm(&some_timer);
+	os_timer_setfn(&some_timer, (os_timer_func_t *)myTimer, NULL);
+	os_timer_arm(&some_timer, 500, 1);
+ 
+	system_os_post(procTaskPrio, 0, 0 );
 }
 
 
