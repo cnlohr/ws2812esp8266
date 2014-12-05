@@ -14,9 +14,9 @@ SRCS:=driver/uart.c \
 	user/user_main.c 
 
 GCC_FOLDER:=~/esp8266/xtensa-toolchain-build/build-lx106
-ESPTOOL_PY:=../../esp8266/firmware_staging/esptool/esptool.py
-FW_TOOL:=../../esp8266/esptool/esptool/esptool
-SDK:=../../esp8266/esp_iot_sdk_v0.9.3
+ESPTOOL_PY:=~/esp8266/esptool/esptool.py
+FW_TOOL:=~/esp8266/other/esptool/esptool
+SDK:=~/esp8266/esp_iot_sdk_v0.9.3
 
 
 XTLIB:=$(SDK)/lib
