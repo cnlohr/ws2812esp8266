@@ -14,14 +14,16 @@ In something the WS2812B can understand.  WARNING: You should have a 100p cap ac
 #STEP 1: Getting GCC and tools
   Get and build a copy of the xtensa build toolchain here:
   https://github.com/jcmvbkbc/xtensa-toolchain-build
-   ... you're building the lx106 version.
+   ... you're building the lx106 version.  You will also need the patched GCC here: https://github.com/jcmvbkbc/gcc-xtensa/commits/call0-4.8.2
   The commands you will need are as follows:
 ```
 cd ~/esp8266
 git clone https://github.com/jcmvbkbc/xtensa-toolchain-build.git
 cd xtensa-toolchain-build
 wget http://ftp.gnu.org/pub/gnu/binutils/binutils-2.24.tar.bz2
-wget http://ftp.gnu.org/gnu/gcc/gcc-4.9.1/gcc-4.9.1.tar.bz2
+git clone --depth=1 https://github.com/jcmvbkbc/gcc-xtensa.git
+mv gcc-xtensa/gcc-xtensa-call0-4.8.2 gcc-4.9.1
+wget https://github.com/jcmvbkbc/gcc-xtensa/archive/call0-4.8.2.zip
 wget http://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.bz2
 ./prepare.sh lx106
 ./build-elf.sh lx106
