@@ -16,7 +16,7 @@ SRCS:=driver/uart.c \
 GCC_FOLDER:=~/esp8266/xtensa-toolchain-build/build-lx106
 ESPTOOL_PY:=~/esp8266/esptool/esptool.py
 FW_TOOL:=~/esp8266/other/esptool/esptool
-SDK:=~/esp8266/esp_iot_sdk_v0.9.3
+SDK:=/home/cnlohr/esp8266/esp_iot_sdk_v0.9.3
 
 
 XTLIB:=$(SDK)/lib
@@ -25,7 +25,7 @@ FOLDERPREFIX:=$(GCC_FOLDER)/root/bin
 PREFIX:=$(FOLDERPREFIX)/xtensa-lx106-elf-
 CC:=$(PREFIX)gcc
 
-CFLAGS:=-mlongcalls -I$(SDK)/include -Imyclib -Iinclude -Iuser -Os -I$(SDK)/lib_from_xt/lx106/xtensa-elf/include/
+CFLAGS:=-mlongcalls -I$(SDK)/include -Imyclib -Iinclude -Iuser -Os -I$(SDK)/include/
 
 #	   \
 #
@@ -56,7 +56,7 @@ LINKFLAGS:= \
 #	$(PREFIX)ld $^ $(LDFLAGS) -o $@
 
 $(TARGET_OUT) : $(SRCS)
-	$(PREFIX)gcc $^ $(CFLAGS) -flto $(LINKFLAGS) -o $@
+	$(PREFIX)gcc $(CFLAGS) $^  -flto $(LINKFLAGS) -o $@
 
 
 
