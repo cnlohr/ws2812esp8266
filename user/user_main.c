@@ -91,6 +91,8 @@ void user_init(void)
 	pUdpServer->proto.udp->local_port = 7777;
 	espconn_regist_recvcb(pUdpServer, udpserver_recv);
 
+	wifi_station_dhcpc_start();
+
 	if( espconn_create( pUdpServer ) )
 	{
 		while(1) { uart0_sendStr( "\r\nFAULT\r\n" ); }

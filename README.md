@@ -22,8 +22,7 @@ git clone https://github.com/jcmvbkbc/xtensa-toolchain-build.git
 cd xtensa-toolchain-build
 wget http://ftp.gnu.org/pub/gnu/binutils/binutils-2.24.tar.bz2
 git clone --depth=1 https://github.com/jcmvbkbc/gcc-xtensa.git
-mv gcc-xtensa/gcc-xtensa-call0-4.8.2 gcc-4.9.1
-wget https://github.com/jcmvbkbc/gcc-xtensa/archive/call0-4.8.2.zip
+mv gcc-xtensa gcc-4.9.1
 wget http://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.bz2
 ./prepare.sh lx106
 ./build-elf.sh lx106
@@ -55,7 +54,7 @@ ESP_ROM_BAUD    = 230400
   You can get it from: https://github.com/themadinventor/esptool/.  Simply git clone.
 ```
 cd ~/esp8266
-https://github.com/themadinventor/esptool.git
+git clone https://github.com/themadinventor/esptool.git
 ```
 #Step 4: Get the SDK
 I expect you get the esp_iot_sdk_v0.9.3. 
