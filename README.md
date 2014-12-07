@@ -11,6 +11,11 @@ In something the WS2812B can understand.  WARNING: You should have a 100p cap ac
   you on how to get it.  If you fail in GCC, you may need libisl-dev,
   libcloog-isl-dev, amongst others.
 
+#STEP 0.1: Alternatives.
+The methods outlined in this document are an older method of installing everything.  You can check out
+this site here: https://github.com/esp8266/esp8266-wiki/wiki/Toolchain to see if anything jives more
+easily with your setup.
+
 #STEP 1: Getting GCC and tools
   Get and build a copy of the xtensa build toolchain here:
   https://github.com/jcmvbkbc/xtensa-toolchain-build
