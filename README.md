@@ -73,6 +73,9 @@ unzip esp_iot_sdk_v0.9.3_14_11_21.zip
 unzip -f esp_iot_sdk_v0.9.3_14_11_21_patch1.zip 
 ```
 
+Note the "License" file in this folder, you can move it into esp_iot_sdk_v0.9.3 if you wish.
+
+
 #Step 5: Configure and build.
 Once you got all those four, check out a copy of ws2812esp8266.
 ```
