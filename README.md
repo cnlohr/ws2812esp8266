@@ -74,7 +74,13 @@ unzip -f esp_iot_sdk_v0.9.3_14_11_21_patch1.zip
 ```
 
 #Step 5: Configure and build.
-Once you got all those four, configure, in your makeifle the following:
+Once you got all those four, check out a copy of ws2812esp8266.
+```
+cd ~/esp8266
+git clone https://github.com/cnlohr/ws2812esp8266.git
+```
+
+Configure it in your makefile with the following:
 ```
 GCC_FOLDER:=~/esp8266/xtensa-toolchain-build/build-lx106
 ESPTOOL_PY:=~/esp8266/esptool/esptool.py
