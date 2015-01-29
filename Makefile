@@ -17,7 +17,8 @@ GCC_FOLDER:=~/esp8266/xtensa-toolchain-build/build-lx106
 ESPTOOL_PY:=~/esp8266/esptool/esptool.py
 FW_TOOL:=~/esp8266/other/esptool/esptool
 SDK:=/home/cnlohr/esp8266/esp_iot_sdk_v0.9.3
-
+PORT:=/dev/ttyUSB0
+#PORT:=/dev/ttyACM0
 
 XTLIB:=$(SDK)/lib
 XTGCCLIB:=$(GCC_FOLDER)/gcc-4.9.1-elf/xtensa-lx106-elf/libgcc/libgcc.a
@@ -69,7 +70,7 @@ $(FW_FILE_2): $(TARGET_OUT)
 	$(FW_TOOL) -eo $(TARGET_OUT) -es .irom0.text $@ -ec
 
 burn : $(FW_FILE_1) $(FW_FILE_2)
-	($(ESPTOOL_PY) --port /dev/ttyUSB0 write_flash 0x00000 0x00000.bin 0x40000 0x40000.bin)||(true)
+	($(ESPTOOL_PY) --port $(PORT) write_flash 0x00000 0x00000.bin 0x40000 0x40000.bin)||(true)
 
 
 clean :

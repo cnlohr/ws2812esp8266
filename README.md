@@ -50,6 +50,17 @@ make
 ```
   Verify there are no errors.
 
+Note the "License" file in this folder, you can move it into esp_iot_sdk_v0.9.3 if you wish.
+
+
+#Step 5: Configure and build.
+Once you got all those four, check out a copy of ws2812esp8266.
+```
+cd ~/esp8266
+git clone https://github.com/cnlohr/ws2812esp8266.git
+```
+
+
 #Step 3: esptool.py
 You'll need to get a copy of esptool.py.  You may want to change:
 ```
@@ -90,4 +101,47 @@ ESPTOOL_PY:=~/esp8266/esptool/esptool.py
 FW_TOOL:=~/esp8266/other/esptool/esptool
 SDK:=~/esp8266/esp_iot_sdk_v0.9.3
 ```
+#Step 6: Hardware
+
+For my examples, I use the standard WI-06 format, it's the one with the 2x4 (8) pin .1" header at the bottom. 
+
+```
+ TXD        GND----+
+                   |
+ CH_PD      GPIO2  SWITCH  MAIN BODY + ANTENNA THIS WAY
+  |                |               (TOP VIEW)
+ RST---1k---GPIO0--+
+  |
+ VCC        RXD
+```
+
+#Appendix A: Building on OSX.
+Ingo Randolf found that this also works on OSX with the following commands:
+
+
+instead of wget one can use curl for downloading files:
+curl -O http://file-to-download.zip
+
+1. building gcc
+In order for gcc to build I had to specify where to find mpc, mpfr, gmp. all of those libraries are installed via macports, so they are at /opt/local/include and /opt/local/lib.
+
+In build-gcc.sh I appended this to the line which call the configure command for gcc: 
+```--with-mpc=/opt/local --with-mpfr=/opt/local --with-gmp=/opt/local```
+
+The full line looks like this:
+```../../$GCC/configure --target=$TARGET --prefix=$PREFIX \
+    -enable__cxa_atexit --disable-shared --disable-libssp --enable-languages=c "$@"  --with-mpc=/opt/local --with-mpfr=/opt/local --with-gmp=/opt/local```
+
+
+2. ccache-install.sh
+In ccache-install.sh i needed to change the last line to:
+
+```find ./ -type f | xargs -I{} ln -sf ../../../ccache.sh ../ccache/{}```
+
+"find" needs a path as the seconds argument, xargs option -i is deprecated, -I must be used.
+
+
+3. Building esptool
+Ffor building the esptool setting TARGET_ARCH to LINUX is fine.  I needed to fix some return types in elf/esptool_elf_object.c (line 252 and 258) and binimage/esptool_binimage.c (line 159).  The compiler tells the line-numbers.
+
 
