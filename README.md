@@ -8,8 +8,24 @@ In something the WS2812B can understand.  WARNING: You should have a 100p cap ac
 #STEP 0: Environment
   I use Linux Mint and already had all the packages I needed installed.
   If you  run into commands that do not exist on your system, it should prompt
-  you on how to get it.  If you fail in GCC, you may need libisl-dev,
-  libcloog-isl-dev, amongst others.
+  you on how to get it.  If you fail in GCC, you may need:
+
+* build-essential
+* gperf 
+* bison flex 
+* texinfo
+* libtool
+* libncurses5-dev
+* wget
+* gawk
+* libc6-dev-amd64
+* python-serial
+* libexpat-dev
+* libisl-dev
+* libcloog-isl-dev
+* libmpc-dev
+
+  amongst others.
 
 #STEP 0.1: Alternatives.
 The methods outlined in this document are an older method of installing everything.  You can check out
