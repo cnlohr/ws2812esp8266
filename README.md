@@ -1,3 +1,7 @@
+#DEPRECATION NOTICE
+This project is here mostly as a guide for the old way to do basic C ESP8266 projects.  If you want improved WS2812 driving and a more modern environment, please check out: https://github.com/cnlohr/esp8266ws2812i2s.
+
+
 #ESP8266 WS2812 Driver (With ESP8266 Build Guide)
 A basic WS2812 driver for the ESP8266.  You send a UDP packet to it on port 7777 and it plops it out GPIO0.
 In something the WS2812B can understand.  WARNING: You should have a 100p cap across GPIO0 to GND.  I don't know why but it will flash if you don't.
