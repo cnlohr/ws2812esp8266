@@ -1,15 +1,15 @@
-#DEPRECATION NOTICE
+# DEPRECATION NOTICE
 This project is here mostly as a guide for the old way to do basic C ESP8266 projects.  If you want improved WS2812 driving and a more modern environment, please check out: https://github.com/cnlohr/esp8266ws2812i2s.
 
 
-#ESP8266 WS2812 Driver (With ESP8266 Build Guide)
+# ESP8266 WS2812 Driver (With ESP8266 Build Guide)
 A basic WS2812 driver for the ESP8266.  You send a UDP packet to it on port 7777 and it plops it out GPIO0.
 In something the WS2812B can understand.  WARNING: You should have a 100p cap across GPIO0 to GND.  I don't know why but it will flash if you don't.
 
 
-#How to build a build environment.
+# How to build a build environment.
 
-#STEP 0: Environment
+# STEP 0: Environment
   I use Linux Mint and already had all the packages I needed installed.
   If you  run into commands that do not exist on your system, it should prompt
   you on how to get it.  If you fail in GCC, you may need:
@@ -32,7 +32,7 @@ In something the WS2812B can understand.  WARNING: You should have a 100p cap ac
 
   amongst others.
 
-#STEP 0.1: Alternatives.
+# STEP 0.1: Alternatives.
 
 The current method I use is this: https://github.com/pfalcon/esp-open-sdk You can skip Step 1 if you use this.
 It also contains a superior libc, so I highly recommend it.
@@ -42,7 +42,7 @@ this site here: https://github.com/esp8266/esp8266-wiki/wiki/Toolchain to see if
 easily with your setup.
 
 
-#STEP 1: Getting GCC and tools
+# STEP 1: Getting GCC and tools
   Get and build a copy of the xtensa build toolchain here:
   https://github.com/jcmvbkbc/xtensa-toolchain-build
    ... you're building the lx106 version.  You will also need the patched GCC here: https://github.com/jcmvbkbc/gcc-xtensa/commits/call0-4.8.2
@@ -59,7 +59,7 @@ wget http://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.bz2
 ./build-elf.sh lx106
 ```
 
-#Step 2: ESPTool (for binaries)
+# Step 2: ESPTool (for binaries)
 You'll need a copy of esptool:
   download esp-0.0.2.zip from http://filez.zoobab.com/esp8266/esptool-0.0.2.zip
   I downloaded it to ~/esp8266/other/.
@@ -79,7 +79,7 @@ make
 Note the "License" file in this folder, you can move it into esp_iot_sdk_v0.9.3 if you wish.
 
 
-#Step 5: Configure and build.
+# Step 5: Configure and build.
 Once you got all those four, check out a copy of ws2812esp8266.
 ```
 cd ~/esp8266
@@ -87,7 +87,7 @@ git clone https://github.com/cnlohr/ws2812esp8266.git
 ```
 
 
-#Step 3: esptool.py
+# Step 3: esptool.py
 You'll need to get a copy of esptool.py.  You may want to change:
 ```
 ESP_ROM_BAUD    = 230400
@@ -98,7 +98,7 @@ ESP_ROM_BAUD    = 230400
 cd ~/esp8266
 git clone https://github.com/themadinventor/esptool.git
 ```
-#Step 4: Get the SDK
+# Step 4: Get the SDK
 I expect you get the esp_iot_sdk_v0.9.3. 
   esp_iot_sdk_v0.9.3_14_11_21.zip -> http://bbs.espressif.com/download/file.php?id=72
   esp_iot_sdk_v0.9.3_14_11_21_patch1.zip -> http://bbs.espressif.com/download/file.php?id=73
@@ -116,7 +116,7 @@ Note the "License" file in this folder, you can move it into esp_iot_.
 sdk_v0.9.3 if you wish.
 
 
-#Step 5: Configure and build.
+# Step 5: Configure and build.
 Once you got all those four, check out a copy of ws2812esp8266.
 ```
 cd ~/esp8266
@@ -130,7 +130,7 @@ ESPTOOL_PY:=~/esp8266/esptool/esptool.py
 FW_TOOL:=~/esp8266/other/esptool/esptool
 SDK:=~/esp8266/esp_iot_sdk_v0.9.3
 ```
-#Step 6: Hardware
+# Step 6: Hardware
 
 For my examples, I use the standard WI-06 format, it's the one with the 2x4 (8) pin .1" header at the bottom. 
 
@@ -144,14 +144,14 @@ For my examples, I use the standard WI-06 format, it's the one with the 2x4 (8) 
  VCC        RXD
 ```
 
-#Appendix A: Building on OSX.
+# Appendix A: Building on OSX.
 Ingo Randolf found that this also works on OSX with the following commands:
 
 
 instead of wget one can use curl for downloading files:
 curl -O http://file-to-download.zip
 
-##1. building gcc
+## 1. building gcc
 
 In order for gcc to build I had to specify where to find mpc, mpfr, gmp. all of those libraries are installed via macports, so they are at /opt/local/include and /opt/local/lib.
 
@@ -163,7 +163,7 @@ The full line looks like this:
     -enable__cxa_atexit --disable-shared --disable-libssp --enable-languages=c "$@"  --with-mpc=/opt/local --with-mpfr=/opt/local --with-gmp=/opt/local```
 
 
-##2. ccache-install.sh
+## 2. ccache-install.sh
 
 In ccache-install.sh i needed to change the last line to:
 
